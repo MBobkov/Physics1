@@ -1,0 +1,56 @@
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import math
+
+
+class Particle():
+    def __init__(self, x, y, vx, vy, ax=0, ay=0, m=1):
+        self.vx = vx
+        self.vy = vy
+        self.x = x
+        self.y = y
+        self.ax = ax
+        self.ay = ay
+        self.m = m
+
+    def step(self, dt):
+        self.vx += self.ax * dt
+        self.vy += self.ay * dt
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+
+
+dt = 1/1000
+plist = []
+x0 = 2
+y0 = -0.5
+x1 = -2
+y1 = 0.5
+plist.append(Particle(x0, y0, -2, 0)) #first coordinates of the first particle
+plist.append(Particle(x1, y1, 2, 0)) #second coordinates of the second particle
+
+fig = plt.figure(figsize=(5, 5))
+ax = plt.axes(xlim=(-3, 3), ylim=(-3, 3))
+scatter = ax.scatter([], [])
+
+
+def animations(frame):
+    p1 = plist[0]
+    p2 = plist[1]
+    r = math.hypot(p1.x - p2.x, p1.y - p2.y)
+    plist[0].ax = 1 / r**2
+    plist[0].ay = 1 / r**2
+    plist[1].ay = -1 / r**2
+    plist[1].ax = -1 / r**2
+    plist[0].step(dt)
+    plist[1].step(dt)
+
+    offsets = []
+    for p in plist:
+        offsets.append([p.x, p.y])
+    scatter.set_offsets(offsets)
+    return scatter,
+
+
+anim = animation.FuncAnimation(fig, animations, interval=1, blit=True, frames=150)
+plt.show()
